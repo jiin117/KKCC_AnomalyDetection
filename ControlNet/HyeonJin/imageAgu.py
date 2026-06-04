@@ -4,7 +4,7 @@ import torch
 from PIL import Image
 from diffusers import StableDiffusionControlNetPipeline, ControlNetModel
 
-# ControlNet 가져
+# ControlNet 가져오기
 controlnet = ControlNetModel.from_pretrained(
     "lllyasviel/control_v11p_sd15_canny",
     torch_dtype=torch.float16
