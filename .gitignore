@@ -1,0 +1,11 @@
+.idea/
+.venv/
+__pycache__/
+*.safetensors
+*.pth
+*.tar.gz
+*.png
+*.txt
+*.jsonl
+mvtec_ad_1/
+mvtec_ad_2/
