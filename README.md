@@ -1,7 +1,7 @@
 <표준적인 프로젝트 구조와 정리 방식>
 
-제공된 SDXL, SAM, LoRA 결합 파이프라인의 구성 요소들을 기반으로, 
-실제 대학교 연구실이나 오픈소스 AI 연구 진영(예: Intel Anomalib, Hugging Face)에서 
+제공된 SDXL, SAM, LoRA 결합 파이프라인의 구성 요소들을 기반으로,</br>
+실제 대학교 연구실이나 오픈소스 AI 연구 진영(예: Intel Anomalib, Hugging Face)에서 </br>
 오픈소스화할 때 사용하는 표준적인 프로젝트 구조와 정리 방식을 제안합니다.
 
 ## **1\. 표준 디렉토리 구조 (Directory Structure)**
@@ -12,8 +12,7 @@
 `│   └── base_config.yaml`  
 `├── src/                       # 메인 소스 코드 패키지`  
 `│   ├── __init__.py`  
-`│   ├── data/                  # 1~2단계 데이터 준비 및 전처리 전담`  
-`│   │   ├── __init__.py`  
+`│   ├── data/                  # 1~2단계 데이터 준비 및 
 `│   │   ├── preprocess.py      # 레터박스 패딩 및 캡셔닝 파일 생성 로직`  
 `│   │   └── dataset.py         # MVTec 품목별 이미지 로더 정의`  
 `│   ├── models/                # 3단계 개별 모델 객체 및 파이프라인 통합`  
