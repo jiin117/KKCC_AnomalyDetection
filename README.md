@@ -7,7 +7,7 @@
 ## **1\. 표준 디렉토리 구조 (Directory Structure)**
 
 기능별 역할을 명확히 분리하고 하드코딩을 방지하기 위해 설정을 외부로 빼는 구조입니다.  
-`sdxl-anomaly-augmentation/`  
+`Data-Augmentation/`  
 `├── configs/                   # 실험 하이퍼파라미터 및 경로 설정 (YAML)`  
 `│   └── base_config.yaml`  
 `├── src/                       # 메인 소스 코드 패키지`  
