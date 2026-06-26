@@ -5,7 +5,8 @@ __pycache__/
 *.pth
 *.tar.gz
 *.png
-*.txt
 *.jsonl
 mvtec_ad_1/
 mvtec_ad_2/
+agu_img/
+prep_img/
