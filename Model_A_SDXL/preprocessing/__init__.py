@@ -2,4 +2,3 @@
 from .padding import letter_padding_1024
 from .captioning import auto_Caption
 from .LoraWeightExtractor import LoraWeightExtractor
-from .inference import SDXLInpaintGenerator
