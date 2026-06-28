@@ -29,15 +29,16 @@ class SDXLInpaintGenerator:
         self.output_dir = None
         self.prompt = None
 
-    def generate_image(self, category,
+    def generate_image(self,
                        lora_dir,
-                       input_dir,
+                       padded_dir,
+                       mask_dir,
                        output_dir,
                        prompt):
         """특정 품목의 LoRA를 로드하여 마스크 기반 인페인팅 이미지를 생성하는 메서드"""
-        self.category = category
         self.lora_dir = lora_dir
-        self.input_dir = input_dir
+        self.padded_dir = padded_dir
+        self.mask_dir = mask_dir
         self.output_dir = os.path.join(output_dir, category)
         self.prompt = prompt
         os.makedirs(output_dir, exist_ok=True)
@@ -69,3 +70,8 @@ class SDXLInpaintGenerator:
                 result_image.save(os.path.join(result_image_path))
         # 다음 품목 학습을 위해 현재 품목 LoRA 가중치 언로드
         self.pipe.unload_lora_weights()
+
+if __name__ == "__main__":
+    sample = SDXLInpaintGenerator()
+    prompt = ""
+    sample.generate_image()

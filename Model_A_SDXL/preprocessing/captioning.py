@@ -21,7 +21,7 @@ class auto_Caption:
 
             # 캡션 생성
             inputs = processor(raw_image, return_tensors="pt").to(device)
-            out = model.generate(**inputs)
+            out = model.generate(**inputs, max_new_tokens = 50)
             caption = processor.decode(out[0], skip_special_tokens=True)
 
             # 파일 저장 (Trigger Word + AI 생성 캡션)
@@ -45,4 +45,8 @@ class auto_Caption:
                         # jsonl 한 줄 작성
                         line = {"file_name": img_name, "text": caption}
                         f_jsonl.write(json.dumps(line, ensure_ascii=False) + "\n")
-                        break
+
+if __name__ == "__main__":
+    sample = auto_Caption()
+    sample.generate_captions("/home/ai-engr/KKCC/Model_A_SDXL/0628/can_padded", "can")
+    sample.create_diffusers_metadata()

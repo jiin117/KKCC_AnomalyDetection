@@ -8,11 +8,10 @@ class LoraWeightExtractor:
         self.category = None
         self.input_dir = None
         self.output_dir = None
-    def extract_lora_weights(self, script_path, category, input_dir, output_dir):
-        self.script_path = script_path
-        self.category = category
+    def extract_lora_weights(self, input_dir, output_dir):
+        self.script_path = "/home/ai-engr/KKCC/diffusers/examples/text_to_image/train_text_to_image_lora_sdxl.py"
         self.input_dir = input_dir
-        self.output_dir = os.path.join(output_dir, category)
+        self.output_dir = output_dir
         os.makedirs(self.output_dir, exist_ok=True)
 
         cmd = [
@@ -37,10 +36,16 @@ class LoraWeightExtractor:
 
         try:
             subprocess.run(cmd, check=True)
-            print(f"[{self.category}] LoRA 가중치 추출 완료: {self.output_dir}")
+            # print(f"[{self.category}] LoRA 가중치 추출 완료: {self.output_dir}")
 
         except subprocess.CalledProcessError as e:
-            print(f"[{self.category}] 학습 중 오류 발생: {e}")
+            pass
+            # print(f"[{self.category}] 학습 중 오류 발생: {e}")
 
     def get_lora_weights_category_dir(self):
         return self.output_dir
+
+if __name__ == "__main__":
+    sample = LoraWeightExtractor()
+    sample.extract_lora_weights("/home/ai-engr/KKCC/Model_A_SDXL/0628/can_padded",
+                                "/home/ai-engr/KKCC/Model_A_SDXL/0628/")

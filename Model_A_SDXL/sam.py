@@ -16,47 +16,40 @@ class SAMMaskExtractor:
 
         # 1. SAM 모델 및 Predictor 세팅
         self.model = sam_model_registry["vit_h"](checkpoint="sam_vit_h_4b8939.pth").to(self.device)
-        self.predictor = SamPredictor(model)
+        self.predictor = SamPredictor(self.model)
         print(f"   => [SAMMaskExtractor] SAM 로드 완료 (Device: {self.device})")
         # 2. 기준이 되는 프롬프트 설정 (예: 이미지 중앙 근처의 점 좌표와 라벨)
         # 사진들의 해상도와 대상 위치가 거의 같으므로 동일한 좌표를 재사용합니다.
         self.input_point = np.array([[512, 512]])
         self.input_label = np.array([1]) # 1: 포인트를 포함한 마스크 생성 // 2: 포인트를 제외한 마스크 생성
-        """
-        for path in image_paths:
-            image = cv2.imread(path)
-            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
-            # 이미지를 세팅하고 프롬프트 주입 (set_image가 매번 호출되지만 좌표 연산은 초고속)
-            predictor.set_image(image)
-            masks, scores, logits = predictor.predict(
-                point_coords=input_point,
-                point_labels=input_label,
-                multimask_output=False
-            )
-            # masks[0] 에 저장된 불리언 마스크 배열을 저장하거나 후처리 진행"""
+        self.train_target_dir = None
 
-    def extract_mask_by_point(self, pil_image):
+    def extract_mask(self, train_target_dir, output_dir):
         """
         특정 픽셀 좌표(Point)를 기반으로 객체 마스크를 추출합니다.
         point_coords: [[x, y]] 형태의 리스트 (예: 제품의 중심점)
         """
-        # 2. PIL 이미지를 SAM이 인식할 수 있는 NumPy 배열(RGB)로 변환
-        image_np = np.array(pil_image.convert("RGB"))
-        self.predictor.set_image(image_np)
+        self.train_target_dir = train_target_dir
+        self.output_dir = output_dir
+        for img_name in os.listdir(self.train_target_dir):
+            if not img_name.endswith(('.png')): continue
 
-        # 3. SAM 인퍼런스 수행
-        masks, scores, logits = self.predictor.predict(
-            point_coords=input_point,
-            point_labels=input_label,
-            multimask_output=False  # 가장 신뢰도 높은 단일 마스크만 반환
-        )
-        """
-        저장 포맷: 추출된 마스크는 cv2.imwrite()를 이용해 흑백(0과 255) .png 파일로 저장해야 
-        손실 없이 나중에 StableDiffusionXLInpaintPipeline의 mask_image 인풋으로 바로 활용할 수 있습니다.
-        """
-        # 4. 부울(Bool) 배열 마스크를 0~255 범위의 PIL 흑백(L 모드) 이미지로 변환
-        mask_np = (masks[0] * 255).astype(np.uint8)
-        mask_pil = Image.fromarray(mask_np).convert("L")
+            img_path = os.path.join(self.train_target_dir, img_name)
+            image = cv2.imread(img_path)
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
-        return mask_pil
+            self.predictor.set_image(image)
+            masks, scores, logits = self.predictor.predict(
+                point_coords=self.input_point,
+                point_labels=self.input_label,
+                multimask_output=False  # 가장 신뢰도 높은 단일 마스크만 반환
+            )
+            mask_img = (masks[0] * 255).astype(np.uint8)
+            mask_path = os.path.join(self.output_dir, img_name)
+            cv2.imwrite(mask_path, mask_img)
+
+# if __name__ == "__main__":
+#     sample = SAMMaskExtractor()
+#     sample.extract_mask(train_target_dir="/home/ai-engr/KKCC/Model_A_SDXL/0628/can_padded",
+#                         output_dir="/home/ai-engr/KKCC/Model_A_SDXL/0628/can_mask")

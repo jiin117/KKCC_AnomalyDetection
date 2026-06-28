@@ -1,7 +1,9 @@
 from PIL import Image, ImageOps
 import os
 
-def letter_padding_1024(raw_data_dir, output_dir, category, target_size=1024):
+def letter_padding_1024(raw_data_dir,
+                        output_dir,
+                        target_size=1024):
     for img_name in os.listdir(raw_data_dir):
         if not img_name.endswith('.png'): continue
 
@@ -17,3 +19,7 @@ def letter_padding_1024(raw_data_dir, output_dir, category, target_size=1024):
         padding = (delta_w//2, delta_h//2, delta_w-(delta_w//2), delta_h-(delta_h//2))
         padded_img = ImageOps.expand(img, padding, fill='black') # 검정색 패딩
         padded_img.save(os.path.join(output_dir, img_name))
+
+# if __name__ == '__main__':
+#     letter_padding_1024("/home/ai-engr/KKCC/mvtec_ad_2/can/train/good",
+#                         "/home/ai-engr/KKCC/Model_A_SDXL/0628/padding/can" )

@@ -41,7 +41,7 @@ class MVTecDatasetController:
             print(f"[{category}] 1단계: 레터박스 패딩 전처리 시작")
             self.train_target_dir = os.path.join('./padded_img', category)
             os.makedirs(self.train_target_dir, exist_ok=True)
-            self.padder(self.raw_data_dir, self.train_target_dir, category)
+            self.padder(self.raw_data_dir, self.train_target_dir)
 
             print(f"[{category}] 2단계: 자동 캡셔닝 및 트리거 단어 삽입 시작")
             self.captioner.generate_captions(self.train_target_dir, category)
