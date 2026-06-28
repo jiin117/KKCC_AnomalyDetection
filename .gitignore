@@ -5,9 +5,13 @@ __pycache__/
 *.pth
 *.tar.gz
 *.png
+*.txt
 *.jsonl
+torch_check.py
 mvtec_ad_1/
 mvtec_ad_2/
 agu_img/
 prep_img/
 diffusers/
+
+Model_A_SDXL/0628/
