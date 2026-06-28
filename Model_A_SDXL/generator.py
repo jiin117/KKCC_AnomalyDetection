@@ -39,7 +39,7 @@ class SDXLInpaintGenerator:
         self.lora_dir = lora_dir
         self.padded_dir = padded_dir
         self.mask_dir = mask_dir
-        self.output_dir = os.path.join(output_dir, category)
+        self.output_dir = output_dir
         self.prompt = prompt
         os.makedirs(output_dir, exist_ok=True)
 
@@ -49,11 +49,12 @@ class SDXLInpaintGenerator:
         else:
             print("Lora 가중치 결합 실패")
 
-        for img_name in os.listdir(self.input_dir):
+        for img_name in os.listdir(self.padded_dir):
             if img_name.lower().endswith('.png'):
-                img_path = os.path.join(self.input_dir, img_name)
-                init_image = Image.open(img_path).convert("RGB")
-                mask_image = Image.open(img_path).convert("RGB")
+                padded_img_path = os.path.join(self.padded_dir, img_name)
+                mask_img_path = os.path.join(self.mask_dir, img_name)
+                init_image = Image.open(padded_img_path).convert("RGB")
+                mask_image = Image.open(mask_img_path).convert("RGB")
 
                 # 4. 가이드 문서 규격 준수 이미지 생성 (cross_attention_kwargs 반영)
                 with torch.no_grad():
@@ -61,17 +62,31 @@ class SDXLInpaintGenerator:
                         prompt=prompt,
                         image=init_image,
                         mask_image=mask_image,
-                        num_inference_steps=30,
+                        num_inference_steps=10,
+                        num_images_per_prompt=1,
                         cross_attention_kwargs={"scale": 0.8}  # LoRA 가중치 강도 조절
                     ).images[0]
 
                 # 결과 저장
                 result_image_path = os.path.join(self.output_dir, f"gen_{img_name}")
-                result_image.save(os.path.join(result_image_path))
+                result_image.save(result_image_path)
+                torch.cuda.empty_cache()
         # 다음 품목 학습을 위해 현재 품목 LoRA 가중치 언로드
         self.pipe.unload_lora_weights()
 
 if __name__ == "__main__":
     sample = SDXLInpaintGenerator()
-    prompt = ""
-    sample.generate_image()
+    prompt1 = ("A pristine can, smooth and clean texture, even lighting, "
+               "highly detailed, realistic industrial photography, 8k resolution")
+    sample.generate_image("/home/ai-engr/KKCC/Model_A_SDXL/0628/pytorch_lora_weights.safetensors",
+                       "/home/ai-engr/KKCC/Model_A_SDXL/0628/can_padded",
+                       "/home/ai-engr/KKCC/Model_A_SDXL/0628/can_mask",
+                       "/home/ai-engr/KKCC/Model_A_SDXL/0628/can_gen/normal",
+                       prompt1)
+    prompt2 = ("A can with a noticeable dent, physical shape deformation, "
+               "damaged surface, industrial defect inspection")
+    sample.generate_image("/home/ai-engr/KKCC/Model_A_SDXL/0628/pytorch_lora_weights.safetensors",
+                       "/home/ai-engr/KKCC/Model_A_SDXL/0628/can_padded",
+                       "/home/ai-engr/KKCC/Model_A_SDXL/0628/can_mask",
+                       "/home/ai-engr/KKCC/Model_A_SDXL/0628/can_gen/abnormal",
+                       prompt2)
