@@ -1,0 +1,17 @@
+.idea/
+.venv/
+__pycache__/
+*.safetensors
+*.pth
+*.tar.gz
+*.png
+*.txt
+*.jsonl
+torch_check.py
+mvtec_ad_1/
+mvtec_ad_2/
+agu_img/
+prep_img/
+diffusers/
+
+Data-Agumentation/outputs/
