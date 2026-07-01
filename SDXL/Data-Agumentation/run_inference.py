@@ -1,4 +1,4 @@
-from src import *
+
 
 if __name__ == "__main__":
     # 디렉토리 경로
