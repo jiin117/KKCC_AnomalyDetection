@@ -1,0 +1,12 @@
+accelerate launch "/home/ai-engr/KKCC/diffusers/examples/text_to_image/train_text_to_image_lora_sdxl.py"
+  --pretrained_model_name_or_path="stabilityai/stable-diffusion-xl-base-1.0"
+  --train_data_dir="/home/ai-engr/KKCC/Data-Agumentation/outputs/images/0628/can_padded"
+  --resolution=1024
+  --train_batch_size=4
+  --num_train_epochs=100
+  --max_train_steps=500
+  --learning_rate=1e-04
+  --lr_scheduler="constant"
+  --lr_warmup_steps=0
+  --mixed_precision="bf16"
+  --output_dir="./lora"
