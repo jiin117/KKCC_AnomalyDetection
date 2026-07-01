@@ -4,8 +4,8 @@ import torch
 
 class MVTecDatasetController:
     """
-    MVTec AD 데이터셋의 카테고리별 경로를 격리하여
-    각 전처리 및 학습 모듈에 순차적으로 주입하는 메인 컨트롤러 클래스
+    1. MVTec 데이터셋 카테고리 가지고 오는 함수
+    2. 카테고리 안의 train/good/ 이미지 가지고 오는 함수
     """
     def __init__(self, root_dir, padder, captioner, trainer, generator, script_path):
         self.root_dir = root_dir
