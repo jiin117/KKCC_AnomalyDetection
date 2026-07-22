@@ -3,7 +3,9 @@ import json
 import torch
 from PIL import Image, ImageOps
 from transformers import BlipProcessor, BlipForConditionalGeneration
-from diffusers import StableDiffusionXLImg2ImgPipeline
+from diffusers import StableDiffusionXLImg2ImgPipeline, StableDiffusion3Img2ImgPipeline
+from huggingface_hub import login
+import hf_token
 
 from data import RawDataset, PaddingImages, set_metadata_path, set_generated_image_path
 
@@ -101,7 +103,8 @@ class Processing:
                 torch_dtype=torch.float16,
                 variant="fp16"
             ).to(device)
-            generated_image_path = set_generated_image_path(self.object)
+            model_name = "SDXL"
+            generated_image_path = set_generated_image_path(model_name, self.object)
             for idx in range(RawDataset.__len__(self.RawDataset)):
                 padding_image = self.PaddingImages.get_image(idx)
                 generated_image = pipe(
@@ -110,15 +113,41 @@ class Processing:
                     image = padding_image,
                     height = 1024,
                     width = 1024,
-                    num_inference_steps = 50,
+                    num_inference_steps = 70,
                 ).images[0]
-                generated_image_name = "gen" + self.object + "_" + str(idx).zfill(3) + ".png"
+                generated_image_name = "gen_" + self.object + "_" + str(idx).zfill(3) + ".png"
                 image_path = os.path.join(generated_image_path, generated_image_name)
                 generated_image.save(image_path)
                 print(f"{self.object} : 인덱스 {idx+1}번 증강이미지 생성 완료")
 
     def generate_image_SD35(self):
-        pass
+        self.PaddingImages.image_paths
+        if torch.cuda.is_available():
+            device = "cuda"
+            login(token=hf_token.token)
+            pipe = StableDiffusion3Img2ImgPipeline.from_pretrained(
+                "stabilityai/stable-diffusion-3.5-large",
+                torch_dtype=torch.float16,
+                variant="fp16"
+            ).to(device)
+            model_name = SD35
+            generated_image_path = set_generated_image_path(model_name, self.object)
+            for idx in range(RawDataset.__len__(self.RawDataset)):
+                padding_image = self.PaddingImages.get_image(idx)
+                generated_image = pipe(
+                    prompt=self.prompt,
+                    negative_prompt=self.negative_prompt,
+                    image=padding_image,
+                    strength=0.3,  # 원본 이미지 변경 강도(0.0~1.0) 값이 클수록 프롬프트 반영률 높아지고 원본과 달라짐
+                    guidance_scale=4.0,  # CFG Scale : SD35 권장값인 3.5~4.5 적용, 텍스트 프롬프트를 얼마나 강하게 반영할지.
+                    height=1024,
+                    width=1024,
+                    num_inference_steps=50,
+                ).images[0]
+                generated_image_name = "gen_" + self.object + "_" + str(idx).zfill(3) + ".png"
+                image_path = os.path.join(generated_image_path, generated_image_name)
+                generated_image.save(image_path)
+                print(f"{self.object} : 인덱스 {idx + 1}번 증강이미지 생성 완료")
 
 
 

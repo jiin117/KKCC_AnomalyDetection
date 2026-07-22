@@ -7,8 +7,9 @@ from torch.utils.data import Dataset
 from torchvision.datasets.folder import default_loader
 from torchvision.transforms.functional import to_tensor
 
-root = '/NHNHOME/WORKSPACE/26moel002_ex07/AD/Data'
-# root = '/home/ai-engr/KKCC/'
+root = '/NHNHOME/WORKSPACE/26moel002_ex07/AD/Data' #B200 데이터셋 저장 폴더(공유폴더임)
+# root = '/home/ai-engr/KKCC/' # ai-engr 컴퓨터 사용할 경우 폴더 경로임
+
 PATH_TO_MVTEC_AD_1_FOLDER = root + '/OpenDataset/mvtec_ad_1'
 MVTEC_AD_1_OBJECTS = [
     'bottle',
@@ -39,8 +40,9 @@ MVTEC_AD_2_OBJECTS = [
     'wallplugs',
     'walnuts',
 ]
-class RawDataset:
-    """Dataset에서 이미지 가져오는 등 컨트롤하기 위한 클래스
+
+"""
+Dataset에서 이미지 가져오는 등 컨트롤하기 위한 클래스
         <MVTec AD 1>
             * brachet은 원본 MVTec AD 1 데이터셋에는 없는 품목
             object (str): bottle, cable, capsule, carpet, grid, hazelnut, leather, metal nut,
@@ -50,7 +52,8 @@ class RawDataset:
         <MVTec AD 2>
             object_name (str): can, fabric, fruit_jelly, rice, sheet_metal, vial, wallplugs, walnuts
             split (str): train, validation, test_public, test_private, test_private_mixed
-        """
+"""
+class RawDataset:
     def __init__(self,
                  dataset_name = 'MVTEC_AD_2',
                  object_name = "can",
@@ -122,11 +125,10 @@ class RawDataset:
     def image_paths(self):
         return self._image_paths
 
-
+"""패딩한 이미지 폴더와 생성한 이미지 폴더(일단 메타데이터 폴더는 아직 사용안했음. 무시 바람)"""
 PADDING_IMAGE_FOLDER = root + '/OpenDataset/padded_image'
 METADATA_FOLDER = root + '/GenerateDataset/metadata'
-GENERATED_IMAGE_FOLDER = root + '/GenerateDataset/gen_image'
-
+GENERATED_IMAGE_FOLDER = root + '/GenerateDataset/'
 
 class PaddingImages(RawDataset):
     def __init__(self, object_name, padding_image_folder=PADDING_IMAGE_FOLDER):
@@ -156,8 +158,8 @@ def set_metadata_path(object_name):
     metadata_dir = os.path.join(METADATA_FOLDER, metadata_name)
     return metadata_dir
 
-def set_generated_image_path(object_name):
-    generated_image_dir = os.path.join(GENERATED_IMAGE_FOLDER, object_name)
+def set_generated_image_path(model_name, object_name):
+    generated_image_dir = os.path.join(GENERATED_IMAGE_FOLDER, model_name, object_name)
     os.makedirs(generated_image_dir, exist_ok=True)
     return generated_image_dir
 
