@@ -5,7 +5,7 @@ from PIL import Image, ImageOps
 from transformers import BlipProcessor, BlipForConditionalGeneration
 from diffusers import StableDiffusionXLImg2ImgPipeline, StableDiffusion3Img2ImgPipeline
 from huggingface_hub import login
-import hf_token
+import tokens
 
 from data import RawDataset, PaddingImages, set_metadata_path, set_generated_image_path
 
@@ -124,13 +124,13 @@ class Processing:
         self.PaddingImages.image_paths
         if torch.cuda.is_available():
             device = "cuda"
-            login(token=hf_token.token)
+            login(token=tokens.token)
             pipe = StableDiffusion3Img2ImgPipeline.from_pretrained(
                 "stabilityai/stable-diffusion-3.5-large",
                 torch_dtype=torch.float16,
                 variant="fp16"
             ).to(device)
-            model_name = SD35
+            model_name = "SD35"
             generated_image_path = set_generated_image_path(model_name, self.object)
             for idx in range(RawDataset.__len__(self.RawDataset)):
                 padding_image = self.PaddingImages.get_image(idx)

@@ -18,4 +18,4 @@ DataAgumentation/modelA_NOW/outputs/
 
 *.code-workspace
 
-DataAgumentation/hf_token.py
+DataAgumentation/tokens.py
