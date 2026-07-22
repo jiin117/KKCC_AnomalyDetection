@@ -130,26 +130,54 @@ class Processing:
                 torch_dtype=torch.float16,
                 variant="fp16"
             ).to(device)
+
+            shared_params = {
+                "prompt" : self.prompt,
+                "negative_prompt" : self.negative_prompt,
+                "strength" : 0.3,  # 원본 이미지 변경 강도(0.0~1.0) 값이 클수록 프롬프트 반영률 높아지고 원본과 달라짐
+                "guidance_scale" : 4.0,  # CFG Scale : SD35 권장값인 3.5~4.5 적용, 텍스트 프롬프트를 얼마나 강하게 반영할지.
+                "height" : 1024,
+                "width" : 1024,
+                "num_inference_steps" : 50,
+            }
+            batch_metadata = {
+                "shared_params" : shared_params,
+                "history" : []
+            }
+            current_seed = 42
+            generator = torch.Generator(device).manual_seed(current_seed)
+
             model_name = "SD35"
             generated_image_path = set_generated_image_path(model_name, self.object)
             for idx in range(RawDataset.__len__(self.RawDataset)):
                 padding_image = self.PaddingImages.get_image(idx)
+                input_image_paths = self.PaddingImages.image_paths
+                input_image_path = input_image_paths[idx]
                 generated_image = pipe(
-                    prompt=self.prompt,
-                    negative_prompt=self.negative_prompt,
+                    prompt=shared_params["prompt"],
+                    negative_prompt=shared_params["negative_prompt"],
                     image=padding_image,
-                    strength=0.3,  # 원본 이미지 변경 강도(0.0~1.0) 값이 클수록 프롬프트 반영률 높아지고 원본과 달라짐
-                    guidance_scale=4.0,  # CFG Scale : SD35 권장값인 3.5~4.5 적용, 텍스트 프롬프트를 얼마나 강하게 반영할지.
-                    height=1024,
-                    width=1024,
-                    num_inference_steps=50,
+                    strength=shared_params["strength"],  # 원본 이미지 변경 강도(0.0~1.0) 값이 클수록 프롬프트 반영률 높아지고 원본과 달라짐
+                    guidance_scale=shared_params["guidance_scale"],  # CFG Scale : SD35 권장값인 3.5~4.5 적용, 텍스트 프롬프트를 얼마나 강하게 반영할지.
+                    height=shared_params["height"],
+                    width=shared_params["width"],
+                    num_inference_steps=shared_params["num_inference_steps"],
+                    generator = generator,
                 ).images[0]
                 generated_image_name = "gen_" + self.object + "_" + str(idx).zfill(3) + ".png"
                 image_path = os.path.join(generated_image_path, generated_image_name)
                 generated_image.save(image_path)
+                batch_metadata["history"].append({
+                    "input_file": input_image_path,
+                    "output_file": image_path,
+                    "seed": current_seed
+                })
                 print(f"{self.object} : 인덱스 {idx + 1}번 증강이미지 생성 완료")
-
-
+            batch_metadata_name = f"{self.object}_batch_metadata.json"
+            batch_metadata_path = os.path.join(generated_image_path, batch_metadata_name)
+            with open(batch_metadata_path, "w", encoding = "utf-8") as f:
+                json.dump(batch_metadata, f, indent = 4, ensure_ascii = False)
+            print(f"{self.object} 증강 이미지 및 메타데이터 생성 완료")
 
 
 

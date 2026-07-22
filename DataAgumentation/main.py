@@ -11,23 +11,16 @@ MVTEC_AD_2_OBJECTS = ['can', 'fabric', 'fruit_jelly', 'rice',
 PROMPT = ["프롬프트 추가하기, 최소 10개"]
 
 if __name__ == "__main__":
-    """
     for object_1 in MVTEC_AD_1_OBJECTS:
         object_name = object_1
         preprocessor = Processing(dataset_name='MVTEC_AD_1', object_name=object_name, )
         # preprocessor.padding_all_images_in_object()
-        preprocessor.generate_image_SDXL()
+        preprocessor.generate_image_SD35()
     for object_2 in MVTEC_AD_2_OBJECTS:
         object_name = object_2
         preprocessor = Processing(dataset_name='MVTEC_AD_2', object_name=object_name, )
         # preprocessor.padding_all_images_in_object()
-        preprocessor.generate_image_SDXL()
-    """
-    gen_model = Processing()
-    print("시작")
-    gen_model.generate_image_SD35()
-    gen_model.generate_image_SDXL()
-    print("완료")
+        preprocessor.generate_image_SD35()
 
 
 
