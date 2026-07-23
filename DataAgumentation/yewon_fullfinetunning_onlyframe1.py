@@ -72,8 +72,8 @@ def run_full_finetuning():
 
     # 4. 준비된 부품들을 가속화 엔진에 일괄 등록
     # "이제부터 B200 하드웨어로 초고속 학습을 시작하겠다"고 세팅하는 함수입니다.
-    transformer, text_encoder, optimizer = accelerator.prepare(
-        transformer, text_encoder, optimizer
+    transformer, text_encoder, noise_scheduler, optimizer = accelerator.prepare(
+        transformer, text_encoder, noise_scheduler, optimizer
     )
 
     # 5. 무한 반복 학습 루프 (가장 핵심적인 훈련 과정)
